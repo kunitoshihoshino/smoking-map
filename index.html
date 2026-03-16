@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>近くの喫煙所マップ</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="喫煙所マップ" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: #f5f5f5;
+    }
+
+    header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      z-index: 1000;
+    }
+
+    header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .header-btn {
+      padding: 6px 10px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      background: #16213e;
+      color: #ccc;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .header-btn:hover { background: #0f3460; }
+    .header-btn.active { color: #4caf50; border-color: #4caf50; }
+
+    #radius-select {
+      padding: 6px 10px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      background: #16213e;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    #search-btn {
+      padding: 8px 16px;
+      background: #e94560;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    #search-btn:hover { background: #c73650; }
+    #search-btn:disabled { background: #666; cursor: not-allowed; }
+
+    #map { flex: 1; width: 100%; }
+
+    #status-bar {
+      background: #1a1a2e;
+      color: #ccc;
+      padding: 8px 16px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      z-index: 1000;
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .legend-item { display: flex; align-items: center; gap: 3px; }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .legend-dot.osm { background: #e94560; }
+    .legend-dot.opendata { background: #1a73e8; }
+    .legend-dot.user { background: #4caf50; }
+
+    /* モーダル共通 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 440px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .modal h2 { font-size: 16px; margin-bottom: 8px; color: #1a1a2e; }
+    .modal p { font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.5; }
+    .modal label { display: block; font-size: 13px; color: #333; margin-bottom: 4px; font-weight: 600; }
+
+    .modal input, .modal textarea, .modal select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 12px;
+      font-family: inherit;
+    }
+
+    .modal textarea { resize: vertical; min-height: 60px; }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .modal-actions button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-primary { background: #e94560; color: #fff; font-weight: 600; }
+    .btn-cancel { background: #eee; color: #333; }
+    .btn-danger { background: none; color: #e94560; margin-right: auto; padding: 8px 4px; }
+
+    /* マーカー */
+    .smoking-icon {
+      border: 2px solid #fff;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .smoking-icon.osm { background: #e94560; }
+    .smoking-icon.opendata { background: #1a73e8; }
+    .smoking-icon.user { background: #4caf50; }
+    .smoking-icon.placing { background: #ff9800; animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .leaflet-popup-content-wrapper { border-radius: 10px; }
+
+    .popup-content h3 { font-size: 15px; margin-bottom: 6px; color: #1a1a2e; }
+    .popup-content p { font-size: 13px; color: #555; margin: 2px 0; }
+
+    .popup-content .badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .popup-content .distance { background: #e94560; color: #fff; }
+    .popup-content .source-osm { background: #ffebee; color: #c62828; }
+    .popup-content .source-opendata { background: #e3f2fd; color: #1565c0; }
+    .popup-content .source-user { background: #e8f5e9; color: #2e7d32; }
+
+    .popup-content .directions-link {
+      display: inline-block;
+      margin-top: 6px;
+      margin-left: 4px;
+      padding: 2px 8px;
+      background: #1a73e8;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .vote-buttons {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .vote-btn {
+      padding: 4px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .vote-btn:hover { background: #f5f5f5; }
+    .vote-btn.voted { font-weight: 700; }
+    .vote-btn.upvote.voted { border-color: #4caf50; color: #4caf50; }
+    .vote-btn.downvote.voted { border-color: #e94560; color: #e94560; }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #ccc;
+      border-top-color: #e94560;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .add-mode-banner {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff9800;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 1500;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .add-mode-banner.show { display: flex; align-items: center; gap: 8px; }
+
+    .add-mode-banner button {
+      background: rgba(255,255,255,0.3);
+      border: none;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🚬 喫煙所マップ</h1>
+    <div class="header-controls">
+      <button id="add-btn" class="header-btn" style="display:none;">+ 投稿</button>
+      <button id="firebase-btn" class="header-btn">Firebase設定</button>
+      <select id="radius-select">
+        <option value="500">500m</option>
+        <option value="1000" selected>1km</option>
+        <option value="2000">2km</option>
+      </select>
+      <button id="search-btn">現在地で検索</button>
+    </div>
+  </header>
+
+  <div class="add-mode-banner" id="add-mode-banner">
+    地図をタップして喫煙所を追加
+    <button id="cancel-add-mode">やめる</button>
+  </div>
+
+  <div id="map"></div>
+
+  <div id="status-bar">
+    <span id="status-text">ボタンを押して近くの喫煙所を検索</span>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot osm"></span>OSM</span>
+      <span class="legend-item"><span class="legend-dot opendata"></span>公共</span>
+      <span class="legend-item"><span class="legend-dot user"></span>投稿</span>
+    </div>
+  </div>
+
+  <!-- Firebase 設定モーダル -->
+  <div id="firebase-modal" class="modal-overlay">
+    <div class="modal">
+      <h2>Firebase 設定</h2>
+      <p>
+        Firebase を設定すると、ユーザーが喫煙所を投稿・共有できるようになります。<br>
+        Firebase Spark プラン（無料）で十分運用できます。<br>
+        設定はブラウザに保存されます。
+      </p>
+      <label>API Key</label>
+      <input type="text" id="fb-apiKey" placeholder="AIza..." />
+      <label>Auth Domain</label>
+      <input type="text" id="fb-authDomain" placeholder="your-project.firebaseapp.com" />
+      <label>Project ID</label>
+      <input type="text" id="fb-projectId" placeholder="your-project-id" />
+      <div class="modal-actions">
+        <button class="btn-danger" id="fb-clear">設定を削除</button>
+        <button class="btn-cancel" id="fb-cancel">キャンセル</button>
+        <button class="btn-primary" id="fb-save">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 投稿フォームモーダル -->
+  <div id="post-modal" class="modal-overlay">
+    <div class="modal">
+      <h2>喫煙所を投稿</h2>
+      <p id="post-latlng"></p>
+      <label>名称 <span style="color:#e94560">*</span></label>
+      <input type="text" id="post-name" placeholder="例: 〇〇ビル前 喫煙所" maxlength="100" />
+      <label>屋内/屋外</label>
+      <select id="post-indoor">
+        <option value="false">屋外</option>
+        <option value="true">屋内</option>
+      </select>
+      <label>メモ（任意）</label>
+      <textarea id="post-note" placeholder="目印や補足情報など" maxlength="200"></textarea>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="post-cancel">キャンセル</button>
+        <button class="btn-primary" id="post-submit">投稿する</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module">
+    // --- Firebase SDK (ES modules CDN) ---
+    let firebaseApp = null;
+    let db = null;
+    let auth = null;
+    let firebaseReady = false;
+
+    async function loadFirebase(config) {
+      try {
+        const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+        const { getFirestore } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        const { getAuth, signInAnonymously } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+
+        firebaseApp = initializeApp(config);
+        db = getFirestore(firebaseApp);
+        auth = getAuth(firebaseApp);
+        await signInAnonymously(auth);
+        firebaseReady = true;
+        return true;
+      } catch (e) {
+        console.warn('Firebase 初期化エラー:', e);
+        firebaseReady = false;
+        return false;
+      }
+    }
+
+    // --- Firestore 操作 ---
+    let firestoreCache = { data: null, timestamp: 0 };
+    const CACHE_TTL = 5 * 60 * 1000;
+
+    async function getFirestorePlaces() {
+      if (!firebaseReady || !db) return [];
+      const now = Date.now();
+      if (firestoreCache.data && (now - firestoreCache.timestamp) < CACHE_TTL) {
+        return firestoreCache.data;
+      }
+      try {
+        const { collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        const snapshot = await getDocs(collection(db, 'spots'));
+        firestoreCache.data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        firestoreCache.timestamp = now;
+        return firestoreCache.data;
+      } catch (e) {
+        console.warn('Firestore 読み取りエラー:', e);
+        return [];
+      }
+    }
+
+    async function addFirestoreSpot(data) {
+      if (!firebaseReady || !db || !auth?.currentUser) throw new Error('Firebase が未設定です');
+      const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const docRef = await addDoc(collection(db, 'spots'), {
+        ...data,
+        createdAt: serverTimestamp(),
+        updatedBy: auth.currentUser.uid,
+        upvotes: 0,
+        downvotes: 0,
+        status: 'active',
+      });
+      firestoreCache.data = null; // キャッシュ無効化
+      return docRef.id;
+    }
+
+    async function voteFirestoreSpot(spotId, type) {
+      if (!firebaseReady || !db) return;
+      const { doc, updateDoc, increment } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const field = type === 'up' ? 'upvotes' : 'downvotes';
+      await updateDoc(doc(db, 'spots', spotId), { [field]: increment(1) });
+      firestoreCache.data = null;
+    }
+
+    // --- Map ---
+    const map = L.map('map').setView([35.6812, 139.7671], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(map);
+
+    const statusText = document.getElementById('status-text');
+    const searchBtn = document.getElementById('search-btn');
+    const radiusSelect = document.getElementById('radius-select');
+    const firebaseBtn = document.getElementById('firebase-btn');
+    const addBtn = document.getElementById('add-btn');
+    const addModeBanner = document.getElementById('add-mode-banner');
+
+    let userMarker = null;
+    let smokingMarkers = [];
+    let userLat = null;
+    let userLng = null;
+    let addMode = false;
+    let placingMarker = null;
+
+    // --- Firebase config 管理 ---
+    function getFirebaseConfig() {
+      const saved = localStorage.getItem('firebase_config');
+      return saved ? JSON.parse(saved) : null;
+    }
+
+    function saveFirebaseConfig(config) {
+      if (config) {
+        localStorage.setItem('firebase_config', JSON.stringify(config));
+      } else {
+        localStorage.removeItem('firebase_config');
+      }
+    }
+
+    async function initFirebase() {
+      const config = getFirebaseConfig();
+      if (!config) {
+        firebaseReady = false;
+        updateFirebaseUI();
+        return;
+      }
+      const ok = await loadFirebase(config);
+      updateFirebaseUI();
+      if (!ok) {
+        setStatus('Firebase の接続に失敗しました。設定を確認してください。');
+      }
+    }
+
+    function updateFirebaseUI() {
+      firebaseBtn.classList.toggle('active', firebaseReady);
+      firebaseBtn.textContent = firebaseReady ? 'Firebase ✓' : 'Firebase設定';
+      addBtn.style.display = firebaseReady ? '' : 'none';
+    }
+
+    // Firebase 設定モーダル
+    const firebaseModal = document.getElementById('firebase-modal');
+    firebaseBtn.addEventListener('click', () => {
+      const config = getFirebaseConfig() || {};
+      document.getElementById('fb-apiKey').value = config.apiKey || '';
+      document.getElementById('fb-authDomain').value = config.authDomain || '';
+      document.getElementById('fb-projectId').value = config.projectId || '';
+      firebaseModal.classList.add('show');
+    });
+
+    document.getElementById('fb-cancel').addEventListener('click', () => firebaseModal.classList.remove('show'));
+    firebaseModal.addEventListener('click', (e) => { if (e.target === firebaseModal) firebaseModal.classList.remove('show'); });
+
+    document.getElementById('fb-save').addEventListener('click', async () => {
+      const config = {
+        apiKey: document.getElementById('fb-apiKey').value.trim(),
+        authDomain: document.getElementById('fb-authDomain').value.trim(),
+        projectId: document.getElementById('fb-projectId').value.trim(),
+      };
+      if (!config.apiKey || !config.projectId) {
+        alert('API Key と Project ID は必須です');
+        return;
+      }
+      saveFirebaseConfig(config);
+      firebaseModal.classList.remove('show');
+      await initFirebase();
+    });
+
+    document.getElementById('fb-clear').addEventListener('click', () => {
+      saveFirebaseConfig(null);
+      firebaseReady = false;
+      updateFirebaseUI();
+      firebaseModal.classList.remove('show');
+    });
+
+    // --- 投稿モード ---
+    addBtn.addEventListener('click', () => {
+      addMode = true;
+      addModeBanner.classList.add('show');
+      map.getContainer().style.cursor = 'crosshair';
+    });
+
+    document.getElementById('cancel-add-mode').addEventListener('click', cancelAddMode);
+
+    function cancelAddMode() {
+      addMode = false;
+      addModeBanner.classList.remove('show');
+      map.getContainer().style.cursor = '';
+      if (placingMarker) {
+        map.removeLayer(placingMarker);
+        placingMarker = null;
+      }
+    }
+
+    map.on('click', (e) => {
+      if (!addMode) return;
+      const { lat, lng } = e.latlng;
+      if (placingMarker) map.removeLayer(placingMarker);
+      placingMarker = L.marker([lat, lng], {
+        icon: L.divIcon({
+          html: '<div class="smoking-icon placing">🚬</div>',
+          className: '',
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+        }),
+      }).addTo(map);
+
+      // フォーム表示
+      document.getElementById('post-latlng').textContent = `位置: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      document.getElementById('post-name').value = '';
+      document.getElementById('post-indoor').value = 'false';
+      document.getElementById('post-note').value = '';
+      document.getElementById('post-modal').classList.add('show');
+      document.getElementById('post-modal').dataset.lat = lat;
+      document.getElementById('post-modal').dataset.lng = lng;
+    });
+
+    document.getElementById('post-cancel').addEventListener('click', () => {
+      document.getElementById('post-modal').classList.remove('show');
+      if (placingMarker) { map.removeLayer(placingMarker); placingMarker = null; }
+    });
+
+    document.getElementById('post-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('post-modal')) {
+        document.getElementById('post-modal').classList.remove('show');
+        if (placingMarker) { map.removeLayer(placingMarker); placingMarker = null; }
+      }
+    });
+
+    document.getElementById('post-submit').addEventListener('click', async () => {
+      const name = document.getElementById('post-name').value.trim();
+      if (!name) { alert('名称を入力してください'); return; }
+
+      // スパム対策: 5分間隔制限
+      const lastPost = parseInt(localStorage.getItem('last_post_time') || '0', 10);
+      if (Date.now() - lastPost < 5 * 60 * 1000) {
+        alert('投稿は5分に1回までです。しばらくお待ちください。');
+        return;
+      }
+
+      const modal = document.getElementById('post-modal');
+      const lat = parseFloat(modal.dataset.lat);
+      const lng = parseFloat(modal.dataset.lng);
+      const indoor = document.getElementById('post-indoor').value === 'true';
+      const note = document.getElementById('post-note').value.trim();
+
+      try {
+        await addFirestoreSpot({ name, lat, lng, indoor, description: note });
+        localStorage.setItem('last_post_time', String(Date.now()));
+        modal.classList.remove('show');
+        cancelAddMode();
+        setStatus('投稿しました！検索すると反映されます。');
+
+        // 投稿したマーカーを即座に表示
+        if (placingMarker) map.removeLayer(placingMarker);
+        placingMarker = null;
+        const dist = (userLat && userLng) ? calcDistance(userLat, userLng, lat, lng) : 0;
+        const marker = L.marker([lat, lng], { icon: createSmokingIcon('user') })
+          .addTo(map)
+          .bindPopup(buildPopup(name, { description: note, indoor: indoor ? 'yes' : 'no' }, lat, lng, dist, 'user', null))
+          .openPopup();
+        smokingMarkers.push(marker);
+      } catch (e) {
+        alert('投稿に失敗しました: ' + e.message);
+      }
+    });
+
+    // --- ユーティリティ ---
+    function setStatus(html) { statusText.innerHTML = html; }
+
+    function createSmokingIcon(source) {
+      return L.divIcon({
+        html: `<div class="smoking-icon ${source}">🚬</div>`,
+        className: '',
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -18],
+      });
+    }
+
+    function calcDistance(lat1, lng1, lat2, lng2) {
+      const R = 6371000;
+      const toRad = (d) => d * Math.PI / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+      const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function formatDistance(m) {
+      return m < 1000 ? `${Math.round(m)}m` : `${(m / 1000).toFixed(1)}km`;
+    }
+
+    function clearMarkers() {
+      smokingMarkers.forEach((m) => map.removeLayer(m));
+      smokingMarkers = [];
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    const SOURCE_LABELS = { osm: 'OSM', opendata: '公共', user: '投稿' };
+    const SOURCE_CLASSES = { osm: 'source-osm', opendata: 'source-opendata', user: 'source-user' };
+
+    function buildPopup(name, extra, lat, lng, dist, source, spotId) {
+      const displayName = escapeHtml(name || '喫煙所');
+      const lines = [`<div class="popup-content"><h3>${displayName}</h3>`];
+
+      if (extra.address) lines.push(`<p>${escapeHtml(extra.address)}</p>`);
+      if (extra.description) lines.push(`<p>${escapeHtml(extra.description)}</p>`);
+      if (extra.opening_hours) lines.push(`<p>営業時間: ${escapeHtml(extra.opening_hours)}</p>`);
+      if (extra.indoor) lines.push(`<p>${extra.indoor === 'yes' ? '屋内' : '屋外'}</p>`);
+      if (extra.operator) lines.push(`<p>管理: ${escapeHtml(extra.operator)}</p>`);
+
+      if (dist > 0) lines.push(`<span class="badge distance">${formatDistance(dist)}</span>`);
+      lines.push(`<span class="badge ${SOURCE_CLASSES[source]}">${SOURCE_LABELS[source]}</span>`);
+      lines.push(`<a class="directions-link" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener">経路案内</a>`);
+
+      // ユーザー投稿にはいいね・通報ボタン
+      if (source === 'user' && spotId) {
+        const voted = JSON.parse(localStorage.getItem('votes') || '{}');
+        const upVoted = voted[spotId] === 'up' ? ' voted' : '';
+        const downVoted = voted[spotId] === 'down' ? ' voted' : '';
+        const upCount = extra.upvotes || 0;
+        const downCount = extra.downvotes || 0;
+        lines.push(`<div class="vote-buttons">`);
+        lines.push(`<button class="vote-btn upvote${upVoted}" data-spot="${spotId}" data-type="up">👍 あった (${upCount})</button>`);
+        lines.push(`<button class="vote-btn downvote${downVoted}" data-spot="${spotId}" data-type="down">👎 なかった (${downCount})</button>`);
+        lines.push(`</div>`);
+      }
+
+      lines.push('</div>');
+      return lines.join('');
+    }
+
+    // 投票イベント（イベント委譲）
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.vote-btn');
+      if (!btn) return;
+      const spotId = btn.dataset.spot;
+      const type = btn.dataset.type;
+      const votes = JSON.parse(localStorage.getItem('votes') || '{}');
+      if (votes[spotId]) { alert('この場所にはすでに投票済みです'); return; }
+      try {
+        await voteFirestoreSpot(spotId, type);
+        votes[spotId] = type;
+        localStorage.setItem('votes', JSON.stringify(votes));
+        btn.classList.add('voted');
+      } catch (e) {
+        console.warn('投票エラー:', e);
+      }
+    });
+
+    // --- データソース: Overpass API (OSM) ---
+    async function searchOverpass(lat, lng, radius) {
+      const query = `
+        [out:json][timeout:15];
+        (
+          node["amenity"="smoking_area"](around:${radius},${lat},${lng});
+          way["amenity"="smoking_area"](around:${radius},${lat},${lng});
+          node["smoking"="yes"](around:${radius},${lat},${lng});
+          node["smoking"="designated"](around:${radius},${lat},${lng});
+          node["smoking"="isolated"](around:${radius},${lat},${lng});
+          node["smoking"="separated"](around:${radius},${lat},${lng});
+          way["smoking"="designated"](around:${radius},${lat},${lng});
+          way["smoking"="isolated"](around:${radius},${lat},${lng});
+          way["smoking"="separated"](around:${radius},${lat},${lng});
+        );
+        out center body;
+      `;
+
+      const res = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        body: `data=${encodeURIComponent(query)}`,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
+
+      if (!res.ok) throw new Error(`Overpass API エラー: ${res.status}`);
+      const data = await res.json();
+
+      return data.elements.map((el) => ({
+        lat: el.lat ?? el.center?.lat,
+        lng: el.lon ?? el.center?.lon,
+        name: el.tags?.name || el.tags?.['name:ja'] || '',
+        source: 'osm',
+        extra: el.tags || {},
+      })).filter((p) => p.lat != null && p.lng != null);
+    }
+
+    // --- データソース: 自治体オープンデータ ---
+    let opendataCache = null;
+
+    async function searchOpendata(lat, lng, radius) {
+      if (!opendataCache) {
+        try {
+          const res = await fetch('./data/opendata.json');
+          opendataCache = await res.json();
+        } catch (e) {
+          console.warn('オープンデータ読み込みエラー:', e);
+          opendataCache = [];
+        }
+      }
+      return opendataCache
+        .filter((p) => calcDistance(lat, lng, p.lat, p.lng) <= radius)
+        .map((p) => ({
+          lat: p.lat,
+          lng: p.lng,
+          name: p.name,
+          source: 'opendata',
+          extra: {
+            address: p.address || '',
+            description: p.note || '',
+            opening_hours: p.hours || '',
+            indoor: p.indoor ? 'yes' : 'no',
+            operator: p.municipality || '',
+          },
+        }));
+    }
+
+    // --- データソース: Firestore (ユーザー投稿) ---
+    async function searchFirestore(lat, lng, radius) {
+      if (!firebaseReady) return [];
+      try {
+        const all = await getFirestorePlaces();
+        return all
+          .filter((p) => (p.status || 'active') === 'active' && (p.downvotes || 0) < 5)
+          .filter((p) => calcDistance(lat, lng, p.lat, p.lng) <= radius)
+          .map((p) => ({
+            lat: p.lat,
+            lng: p.lng,
+            name: p.name || '',
+            source: 'user',
+            spotId: p.id,
+            extra: {
+              description: p.description || '',
+              indoor: p.indoor ? 'yes' : 'no',
+              upvotes: p.upvotes || 0,
+              downvotes: p.downvotes || 0,
+            },
+          }));
+      } catch (e) {
+        console.warn('Firestore 検索エラー:', e);
+        return [];
+      }
+    }
+
+    // --- 統合検索 ---
+    function deduplicatePlaces(places) {
+      const seen = new Set();
+      return places.filter((p) => {
+        const key = `${p.lat.toFixed(4)},${p.lng.toFixed(4)}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    async function handleSearch() {
+      searchBtn.disabled = true;
+      setStatus('<span class="loading-spinner"></span>現在地を取得中…');
+
+      try {
+        const pos = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+          });
+        });
+
+        userLat = pos.coords.latitude;
+        userLng = pos.coords.longitude;
+
+        if (userMarker) map.removeLayer(userMarker);
+        userMarker = L.circleMarker([userLat, userLng], {
+          radius: 10,
+          fillColor: '#4285f4',
+          fillOpacity: 1,
+          color: '#fff',
+          weight: 3,
+        }).addTo(map).bindPopup('現在地');
+
+        const radius = parseInt(radiusSelect.value, 10);
+        map.setView([userLat, userLng], radius <= 500 ? 17 : radius <= 1000 ? 15 : 14);
+
+        setStatus('<span class="loading-spinner"></span>喫煙所を検索中…');
+
+        // 3つのソースを並列検索
+        const [osmResult, opendataResult, firestoreResult] = await Promise.allSettled([
+          searchOverpass(userLat, userLng, radius),
+          searchOpendata(userLat, userLng, radius),
+          searchFirestore(userLat, userLng, radius),
+        ]);
+
+        clearMarkers();
+
+        let allPlaces = [];
+        if (osmResult.status === 'fulfilled') allPlaces.push(...osmResult.value);
+        if (opendataResult.status === 'fulfilled') allPlaces.push(...opendataResult.value);
+        if (firestoreResult.status === 'fulfilled') allPlaces.push(...firestoreResult.value);
+
+        allPlaces = deduplicatePlaces(allPlaces);
+
+        allPlaces.sort((a, b) =>
+          calcDistance(userLat, userLng, a.lat, a.lng) - calcDistance(userLat, userLng, b.lat, b.lng)
+        );
+
+        let counts = { osm: 0, opendata: 0, user: 0 };
+
+        allPlaces.forEach((p) => {
+          const dist = calcDistance(userLat, userLng, p.lat, p.lng);
+          counts[p.source]++;
+
+          const marker = L.marker([p.lat, p.lng], { icon: createSmokingIcon(p.source) })
+            .addTo(map)
+            .bindPopup(buildPopup(p.name, p.extra, p.lat, p.lng, dist, p.source, p.spotId || null));
+          smokingMarkers.push(marker);
+        });
+
+        if (allPlaces.length === 0) {
+          setStatus(`半径${formatDistance(radius)}以内に喫煙所が見つかりませんでした。範囲を広げてください。`);
+        } else {
+          const parts = [];
+          if (counts.osm) parts.push(`OSM ${counts.osm}`);
+          if (counts.opendata) parts.push(`公共 ${counts.opendata}`);
+          if (counts.user) parts.push(`投稿 ${counts.user}`);
+          setStatus(`${allPlaces.length}件（${parts.join(' / ')}）半径${formatDistance(radius)}以内`);
+        }
+      } catch (err) {
+        if (err.code === 1) {
+          setStatus('位置情報の使用が許可されていません。ブラウザの設定を確認してください。');
+        } else if (err.code === 2) {
+          setStatus('位置情報を取得できませんでした。');
+        } else if (err.code === 3) {
+          setStatus('位置情報の取得がタイムアウトしました。');
+        } else {
+          setStatus(`エラー: ${err.message}`);
+        }
+      } finally {
+        searchBtn.disabled = false;
+      }
+    }
+
+    searchBtn.addEventListener('click', handleSearch);
+
+    // --- Service Worker 登録 ---
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('SW 登録失敗:', e));
+    }
+
+    // --- 初期化 ---
+    initFirebase();
+  </script>
+</body>
+</html>

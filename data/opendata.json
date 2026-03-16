@@ -1,0 +1,202 @@
+[
+  {
+    "name": "有楽町駅前喫煙所",
+    "lat": 35.67496,
+    "lng": 139.76335,
+    "address": "千代田区有楽町2丁目",
+    "municipality": "千代田区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "JR有楽町駅中央口付近"
+  },
+  {
+    "name": "神田西口通り喫煙所",
+    "lat": 35.69227,
+    "lng": 139.77073,
+    "address": "千代田区内神田3丁目",
+    "municipality": "千代田区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "神田駅西口側"
+  },
+  {
+    "name": "秋葉原駅前喫煙所",
+    "lat": 35.69836,
+    "lng": 139.77313,
+    "address": "千代田区外神田1丁目",
+    "municipality": "千代田区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "秋葉原駅電気街口前"
+  },
+  {
+    "name": "飯田橋駅前指定喫煙所",
+    "lat": 35.70208,
+    "lng": 139.74459,
+    "address": "千代田区飯田橋4丁目",
+    "municipality": "千代田区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "飯田橋駅東口付近"
+  },
+  {
+    "name": "御茶ノ水駅前喫煙所",
+    "lat": 35.69973,
+    "lng": 139.76514,
+    "address": "千代田区神田駿河台2丁目",
+    "municipality": "千代田区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "御茶ノ水駅聖橋口側"
+  },
+  {
+    "name": "新橋駅SL広場前喫煙所",
+    "lat": 35.66588,
+    "lng": 139.75806,
+    "address": "港区新橋2丁目",
+    "municipality": "港区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "SL広場内"
+  },
+  {
+    "name": "浜松町駅北口喫煙所",
+    "lat": 35.65567,
+    "lng": 139.75700,
+    "address": "港区浜松町2丁目",
+    "municipality": "港区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "浜松町駅北口"
+  },
+  {
+    "name": "田町駅東口喫煙所",
+    "lat": 35.64564,
+    "lng": 139.74762,
+    "address": "港区芝5丁目",
+    "municipality": "港区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "田町駅東口"
+  },
+  {
+    "name": "銀座中央通り喫煙所",
+    "lat": 35.67123,
+    "lng": 139.76456,
+    "address": "中央区銀座4丁目",
+    "municipality": "中央区",
+    "indoor": true,
+    "hours": "7:00-23:00",
+    "note": "銀座駅付近の地下喫煙所"
+  },
+  {
+    "name": "日本橋駅前喫煙所",
+    "lat": 35.68175,
+    "lng": 139.77395,
+    "address": "中央区日本橋1丁目",
+    "municipality": "中央区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "日本橋駅B5出口付近"
+  },
+  {
+    "name": "新宿駅東口喫煙所",
+    "lat": 35.69013,
+    "lng": 139.70068,
+    "address": "新宿区新宿3丁目",
+    "municipality": "新宿区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "新宿駅東口広場"
+  },
+  {
+    "name": "新宿駅西口喫煙所",
+    "lat": 35.69100,
+    "lng": 139.69800,
+    "address": "新宿区西新宿1丁目",
+    "municipality": "新宿区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "新宿駅西口ロータリー付近"
+  },
+  {
+    "name": "渋谷駅ハチ公前喫煙所",
+    "lat": 35.65910,
+    "lng": 139.70065,
+    "address": "渋谷区道玄坂2丁目",
+    "municipality": "渋谷区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "ハチ公口付近"
+  },
+  {
+    "name": "池袋駅東口喫煙所",
+    "lat": 35.72930,
+    "lng": 139.71280,
+    "address": "豊島区南池袋1丁目",
+    "municipality": "豊島区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "池袋駅東口"
+  },
+  {
+    "name": "上野駅前喫煙所",
+    "lat": 35.71378,
+    "lng": 139.77726,
+    "address": "台東区上野7丁目",
+    "municipality": "台東区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "上野駅正面口"
+  },
+  {
+    "name": "品川駅港南口喫煙所",
+    "lat": 35.62850,
+    "lng": 139.74060,
+    "address": "港区港南2丁目",
+    "municipality": "港区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "品川駅港南口"
+  },
+  {
+    "name": "東京駅八重洲口喫煙所",
+    "lat": 35.67960,
+    "lng": 139.76890,
+    "address": "中央区八重洲1丁目",
+    "municipality": "中央区",
+    "indoor": true,
+    "hours": "7:00-22:00",
+    "note": "東京駅八重洲地下街内"
+  },
+  {
+    "name": "横浜駅西口喫煙所",
+    "lat": 35.46620,
+    "lng": 139.62180,
+    "address": "横浜市西区南幸1丁目",
+    "municipality": "横浜市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "横浜駅西口"
+  },
+  {
+    "name": "大阪駅御堂筋口喫煙所",
+    "lat": 34.70255,
+    "lng": 135.49590,
+    "address": "大阪市北区梅田1丁目",
+    "municipality": "大阪市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "大阪駅御堂筋口付近"
+  },
+  {
+    "name": "名古屋駅太閤口喫煙所",
+    "lat": 35.17040,
+    "lng": 136.88150,
+    "address": "名古屋市中村区椿町",
+    "municipality": "名古屋市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "名古屋駅太閤口"
+  }
+]
