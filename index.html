@@ -302,8 +302,7 @@
   <header>
     <h1>🚬 喫煙所マップ</h1>
     <div class="header-controls">
-      <button id="add-btn" class="header-btn" style="display:none;">+ 投稿</button>
-      <button id="firebase-btn" class="header-btn">Firebase設定</button>
+      <button id="add-btn" class="header-btn">+ 投稿</button>
       <select id="radius-select">
         <option value="500">500m</option>
         <option value="1000" selected>1km</option>
@@ -326,29 +325,6 @@
       <span class="legend-item"><span class="legend-dot osm"></span>OSM</span>
       <span class="legend-item"><span class="legend-dot opendata"></span>公共</span>
       <span class="legend-item"><span class="legend-dot user"></span>投稿</span>
-    </div>
-  </div>
-
-  <!-- Firebase 設定モーダル -->
-  <div id="firebase-modal" class="modal-overlay">
-    <div class="modal">
-      <h2>Firebase 設定</h2>
-      <p>
-        Firebase を設定すると、ユーザーが喫煙所を投稿・共有できるようになります。<br>
-        Firebase Spark プラン（無料）で十分運用できます。<br>
-        設定はブラウザに保存されます。
-      </p>
-      <label>API Key</label>
-      <input type="text" id="fb-apiKey" placeholder="AIza..." />
-      <label>Auth Domain</label>
-      <input type="text" id="fb-authDomain" placeholder="your-project.firebaseapp.com" />
-      <label>Project ID</label>
-      <input type="text" id="fb-projectId" placeholder="your-project-id" />
-      <div class="modal-actions">
-        <button class="btn-danger" id="fb-clear">設定を削除</button>
-        <button class="btn-cancel" id="fb-cancel">キャンセル</button>
-        <button class="btn-primary" id="fb-save">保存</button>
-      </div>
     </div>
   </div>
 
@@ -452,10 +428,15 @@
       maxZoom: 19,
     }).addTo(map);
 
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyAPnjz21AqJSg58j92GzzJRjWoFUxfGlJI",
+      authDomain: "smoking-map-4c443.firebaseapp.com",
+      projectId: "smoking-map-4c443",
+    };
+
     const statusText = document.getElementById('status-text');
     const searchBtn = document.getElementById('search-btn');
     const radiusSelect = document.getElementById('radius-select');
-    const firebaseBtn = document.getElementById('firebase-btn');
     const addBtn = document.getElementById('add-btn');
     const addModeBanner = document.getElementById('add-mode-banner');
 
@@ -466,74 +447,13 @@
     let addMode = false;
     let placingMarker = null;
 
-    // --- Firebase config 管理 ---
-    function getFirebaseConfig() {
-      const saved = localStorage.getItem('firebase_config');
-      return saved ? JSON.parse(saved) : null;
-    }
-
-    function saveFirebaseConfig(config) {
-      if (config) {
-        localStorage.setItem('firebase_config', JSON.stringify(config));
-      } else {
-        localStorage.removeItem('firebase_config');
-      }
-    }
-
     async function initFirebase() {
-      const config = getFirebaseConfig();
-      if (!config) {
-        firebaseReady = false;
-        updateFirebaseUI();
-        return;
-      }
-      const ok = await loadFirebase(config);
-      updateFirebaseUI();
+      const ok = await loadFirebase(FIREBASE_CONFIG);
       if (!ok) {
-        setStatus('Firebase の接続に失敗しました。設定を確認してください。');
+        addBtn.style.display = 'none';
+        console.warn('Firebase の接続に失敗しました');
       }
     }
-
-    function updateFirebaseUI() {
-      firebaseBtn.classList.toggle('active', firebaseReady);
-      firebaseBtn.textContent = firebaseReady ? 'Firebase ✓' : 'Firebase設定';
-      addBtn.style.display = firebaseReady ? '' : 'none';
-    }
-
-    // Firebase 設定モーダル
-    const firebaseModal = document.getElementById('firebase-modal');
-    firebaseBtn.addEventListener('click', () => {
-      const config = getFirebaseConfig() || {};
-      document.getElementById('fb-apiKey').value = config.apiKey || '';
-      document.getElementById('fb-authDomain').value = config.authDomain || '';
-      document.getElementById('fb-projectId').value = config.projectId || '';
-      firebaseModal.classList.add('show');
-    });
-
-    document.getElementById('fb-cancel').addEventListener('click', () => firebaseModal.classList.remove('show'));
-    firebaseModal.addEventListener('click', (e) => { if (e.target === firebaseModal) firebaseModal.classList.remove('show'); });
-
-    document.getElementById('fb-save').addEventListener('click', async () => {
-      const config = {
-        apiKey: document.getElementById('fb-apiKey').value.trim(),
-        authDomain: document.getElementById('fb-authDomain').value.trim(),
-        projectId: document.getElementById('fb-projectId').value.trim(),
-      };
-      if (!config.apiKey || !config.projectId) {
-        alert('API Key と Project ID は必須です');
-        return;
-      }
-      saveFirebaseConfig(config);
-      firebaseModal.classList.remove('show');
-      await initFirebase();
-    });
-
-    document.getElementById('fb-clear').addEventListener('click', () => {
-      saveFirebaseConfig(null);
-      firebaseReady = false;
-      updateFirebaseUI();
-      firebaseModal.classList.remove('show');
-    });
 
     // --- 投稿モード ---
     addBtn.addEventListener('click', () => {
