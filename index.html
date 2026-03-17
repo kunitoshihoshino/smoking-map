@@ -87,7 +87,23 @@
     #search-btn:hover { background: #c73650; }
     #search-btn:disabled { background: #666; cursor: not-allowed; }
 
-    #map { flex: 1; width: 100%; }
+    #search-map-btn {
+      padding: 8px 16px;
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    #search-map-btn:hover { background: #1558b0; }
+    #search-map-btn:disabled { background: #666; cursor: not-allowed; }
+
+    #map { width: 100%; height: 100%; }
 
     #status-bar {
       background: #1a1a2e;
@@ -287,6 +303,19 @@
 
     .add-mode-banner.show { display: flex; align-items: center; gap: 8px; }
 
+    .map-crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 800;
+      pointer-events: none;
+      font-size: 24px;
+      color: #333;
+      opacity: 0.5;
+      text-shadow: 0 0 3px #fff, 0 0 3px #fff;
+    }
+
     .add-mode-banner button {
       background: rgba(255,255,255,0.3);
       border: none;
@@ -309,6 +338,7 @@
         <option value="2000">2km</option>
       </select>
       <button id="search-btn">現在地で検索</button>
+      <button id="search-map-btn">この場所で検索</button>
     </div>
   </header>
 
@@ -317,10 +347,13 @@
     <button id="cancel-add-mode">やめる</button>
   </div>
 
-  <div id="map"></div>
+  <div style="position:relative; flex:1;">
+    <div id="map" style="height:100%;"></div>
+    <div class="map-crosshair">+</div>
+  </div>
 
   <div id="status-bar">
-    <span id="status-text">ボタンを押して近くの喫煙所を検索</span>
+    <span id="status-text">現在地またはマップの中心で喫煙所を検索</span>
     <div class="legend">
       <span class="legend-item"><span class="legend-dot osm"></span>OSM</span>
       <span class="legend-item"><span class="legend-dot opendata"></span>公共</span>
@@ -436,6 +469,7 @@
 
     const statusText = document.getElementById('status-text');
     const searchBtn = document.getElementById('search-btn');
+    const searchMapBtn = document.getElementById('search-map-btn');
     const radiusSelect = document.getElementById('radius-select');
     const addBtn = document.getElementById('add-btn');
     const addModeBanner = document.getElementById('add-mode-banner');
@@ -741,8 +775,58 @@
       });
     }
 
-    async function handleSearch() {
+    // --- 共通検索処理 ---
+    async function performSearch(searchLat, searchLng, label) {
+      const radius = parseInt(radiusSelect.value, 10);
+
+      setStatus(`<span class="loading-spinner"></span>${label}周辺の喫煙所を検索中…`);
+
+      const [osmResult, opendataResult, firestoreResult] = await Promise.allSettled([
+        searchOverpass(searchLat, searchLng, radius),
+        searchOpendata(searchLat, searchLng, radius),
+        searchFirestore(searchLat, searchLng, radius),
+      ]);
+
+      clearMarkers();
+
+      let allPlaces = [];
+      if (osmResult.status === 'fulfilled') allPlaces.push(...osmResult.value);
+      if (opendataResult.status === 'fulfilled') allPlaces.push(...opendataResult.value);
+      if (firestoreResult.status === 'fulfilled') allPlaces.push(...firestoreResult.value);
+
+      allPlaces = deduplicatePlaces(allPlaces);
+
+      allPlaces.sort((a, b) =>
+        calcDistance(searchLat, searchLng, a.lat, a.lng) - calcDistance(searchLat, searchLng, b.lat, b.lng)
+      );
+
+      let counts = { osm: 0, opendata: 0, user: 0 };
+
+      allPlaces.forEach((p) => {
+        const dist = calcDistance(searchLat, searchLng, p.lat, p.lng);
+        counts[p.source]++;
+
+        const marker = L.marker([p.lat, p.lng], { icon: createSmokingIcon(p.source) })
+          .addTo(map)
+          .bindPopup(buildPopup(p.name, p.extra, p.lat, p.lng, dist, p.source, p.spotId || null));
+        smokingMarkers.push(marker);
+      });
+
+      if (allPlaces.length === 0) {
+        setStatus(`半径${formatDistance(radius)}以内に喫煙所が見つかりませんでした。範囲を広げてください。`);
+      } else {
+        const parts = [];
+        if (counts.osm) parts.push(`OSM ${counts.osm}`);
+        if (counts.opendata) parts.push(`公共 ${counts.opendata}`);
+        if (counts.user) parts.push(`投稿 ${counts.user}`);
+        setStatus(`${allPlaces.length}件（${parts.join(' / ')}）半径${formatDistance(radius)}以内`);
+      }
+    }
+
+    // --- 現在地で検索 ---
+    async function handleSearchCurrentLocation() {
       searchBtn.disabled = true;
+      searchMapBtn.disabled = true;
       setStatus('<span class="loading-spinner"></span>現在地を取得中…');
 
       try {
@@ -768,49 +852,7 @@
         const radius = parseInt(radiusSelect.value, 10);
         map.setView([userLat, userLng], radius <= 500 ? 17 : radius <= 1000 ? 15 : 14);
 
-        setStatus('<span class="loading-spinner"></span>喫煙所を検索中…');
-
-        // 3つのソースを並列検索
-        const [osmResult, opendataResult, firestoreResult] = await Promise.allSettled([
-          searchOverpass(userLat, userLng, radius),
-          searchOpendata(userLat, userLng, radius),
-          searchFirestore(userLat, userLng, radius),
-        ]);
-
-        clearMarkers();
-
-        let allPlaces = [];
-        if (osmResult.status === 'fulfilled') allPlaces.push(...osmResult.value);
-        if (opendataResult.status === 'fulfilled') allPlaces.push(...opendataResult.value);
-        if (firestoreResult.status === 'fulfilled') allPlaces.push(...firestoreResult.value);
-
-        allPlaces = deduplicatePlaces(allPlaces);
-
-        allPlaces.sort((a, b) =>
-          calcDistance(userLat, userLng, a.lat, a.lng) - calcDistance(userLat, userLng, b.lat, b.lng)
-        );
-
-        let counts = { osm: 0, opendata: 0, user: 0 };
-
-        allPlaces.forEach((p) => {
-          const dist = calcDistance(userLat, userLng, p.lat, p.lng);
-          counts[p.source]++;
-
-          const marker = L.marker([p.lat, p.lng], { icon: createSmokingIcon(p.source) })
-            .addTo(map)
-            .bindPopup(buildPopup(p.name, p.extra, p.lat, p.lng, dist, p.source, p.spotId || null));
-          smokingMarkers.push(marker);
-        });
-
-        if (allPlaces.length === 0) {
-          setStatus(`半径${formatDistance(radius)}以内に喫煙所が見つかりませんでした。範囲を広げてください。`);
-        } else {
-          const parts = [];
-          if (counts.osm) parts.push(`OSM ${counts.osm}`);
-          if (counts.opendata) parts.push(`公共 ${counts.opendata}`);
-          if (counts.user) parts.push(`投稿 ${counts.user}`);
-          setStatus(`${allPlaces.length}件（${parts.join(' / ')}）半径${formatDistance(radius)}以内`);
-        }
+        await performSearch(userLat, userLng, '現在地');
       } catch (err) {
         if (err.code === 1) {
           setStatus('位置情報の使用が許可されていません。ブラウザの設定を確認してください。');
@@ -823,10 +865,28 @@
         }
       } finally {
         searchBtn.disabled = false;
+        searchMapBtn.disabled = false;
       }
     }
 
-    searchBtn.addEventListener('click', handleSearch);
+    // --- 地図の中心で検索 ---
+    async function handleSearchMapCenter() {
+      searchBtn.disabled = true;
+      searchMapBtn.disabled = true;
+
+      try {
+        const center = map.getCenter();
+        await performSearch(center.lat, center.lng, 'この場所');
+      } catch (err) {
+        setStatus(`エラー: ${err.message}`);
+      } finally {
+        searchBtn.disabled = false;
+        searchMapBtn.disabled = false;
+      }
+    }
+
+    searchBtn.addEventListener('click', handleSearchCurrentLocation);
+    searchMapBtn.addEventListener('click', handleSearchMapCenter);
 
     // --- Service Worker 登録 ---
     if ('serviceWorker' in navigator) {

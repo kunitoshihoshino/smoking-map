@@ -56,8 +56,8 @@
     "address": "港区新橋2丁目",
     "municipality": "港区",
     "indoor": false,
-    "hours": "24時間",
-    "note": "SL広場内"
+    "hours": "5:00-25:00",
+    "note": "SL広場内コンテナ型"
   },
   {
     "name": "浜松町駅北口喫煙所",
@@ -76,8 +76,8 @@
     "address": "港区芝5丁目",
     "municipality": "港区",
     "indoor": false,
-    "hours": "24時間",
-    "note": "田町駅東口"
+    "hours": "5:00-25:00",
+    "note": "田町駅東口デッキ下コンテナ型"
   },
   {
     "name": "銀座中央通り喫煙所",
@@ -103,7 +103,7 @@
     "name": "新宿駅東口喫煙所",
     "lat": 35.69013,
     "lng": 139.70068,
-    "address": "新宿区新宿3丁目",
+    "address": "新宿区新宿3丁目38番先",
     "municipality": "新宿区",
     "indoor": false,
     "hours": "24時間",
@@ -113,11 +113,11 @@
     "name": "新宿駅西口喫煙所",
     "lat": 35.69100,
     "lng": 139.69800,
-    "address": "新宿区西新宿1丁目",
+    "address": "新宿区西新宿1丁目1番先",
     "municipality": "新宿区",
     "indoor": false,
     "hours": "24時間",
-    "note": "新宿駅西口ロータリー付近"
+    "note": "新宿駅西口ロータリー内"
   },
   {
     "name": "渋谷駅ハチ公前喫煙所",
@@ -133,11 +133,11 @@
     "name": "池袋駅東口喫煙所",
     "lat": 35.72930,
     "lng": 139.71280,
-    "address": "豊島区南池袋1丁目",
+    "address": "豊島区南池袋1丁目29番先",
     "municipality": "豊島区",
     "indoor": false,
     "hours": "24時間",
-    "note": "池袋駅東口"
+    "note": "池袋駅東口（区営）"
   },
   {
     "name": "上野駅前喫煙所",
@@ -156,8 +156,8 @@
     "address": "港区港南2丁目",
     "municipality": "港区",
     "indoor": false,
-    "hours": "24時間",
-    "note": "品川駅港南口"
+    "hours": "5:00-25:00",
+    "note": "品川駅港南口コンテナ型"
   },
   {
     "name": "東京駅八重洲口喫煙所",
@@ -198,5 +198,545 @@
     "indoor": false,
     "hours": "24時間",
     "note": "名古屋駅太閤口"
+  },
+  {
+    "name": "渋谷駅モヤイ像喫煙所",
+    "lat": 35.65940,
+    "lng": 139.70060,
+    "address": "渋谷区道玄坂1丁目1番先",
+    "municipality": "渋谷区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "渋谷駅西口モヤイ像付近（区設置）"
+  },
+  {
+    "name": "宮益坂下交差点喫煙所",
+    "lat": 35.66000,
+    "lng": 139.70250,
+    "address": "渋谷区渋谷1丁目24番先",
+    "municipality": "渋谷区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "宮益坂下交差点付近（区設置）"
+  },
+  {
+    "name": "渋谷駅新南口喫煙所",
+    "lat": 35.65720,
+    "lng": 139.70260,
+    "address": "渋谷区渋谷3丁目26番先",
+    "municipality": "渋谷区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "渋谷駅新南口付近（区設置）"
+  },
+  {
+    "name": "恵比寿駅西口喫煙所",
+    "lat": 35.64670,
+    "lng": 139.70990,
+    "address": "渋谷区恵比寿南1丁目5番先",
+    "municipality": "渋谷区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "恵比寿駅西口（区設置）"
+  },
+  {
+    "name": "恵比寿駅東口喫煙所",
+    "lat": 35.64750,
+    "lng": 139.71200,
+    "address": "渋谷区恵比寿4丁目1番先",
+    "municipality": "渋谷区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "恵比寿駅東口（区設置）"
+  },
+  {
+    "name": "原宿竹下口喫煙所",
+    "lat": 35.67060,
+    "lng": 139.70270,
+    "address": "渋谷区神宮前1丁目18番先",
+    "municipality": "渋谷区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "原宿駅竹下口付近（区設置）"
+  },
+  {
+    "name": "代々木駅東口喫煙所",
+    "lat": 35.68330,
+    "lng": 139.70220,
+    "address": "渋谷区千駄ヶ谷5丁目20-17",
+    "municipality": "渋谷区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "代々木駅東口（区設置）"
+  },
+  {
+    "name": "代々木駅西口喫煙所",
+    "lat": 35.68370,
+    "lng": 139.70100,
+    "address": "渋谷区代々木1丁目32-13",
+    "municipality": "渋谷区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "代々木駅西口（区設置）"
+  },
+  {
+    "name": "千駄ヶ谷駅前喫煙所",
+    "lat": 35.68100,
+    "lng": 139.71120,
+    "address": "渋谷区千駄ヶ谷1丁目35番先",
+    "municipality": "渋谷区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "千駄ヶ谷駅前（区設置）"
+  },
+  {
+    "name": "西武新宿駅前公衆喫煙所",
+    "lat": 35.69480,
+    "lng": 139.70060,
+    "address": "新宿区歌舞伎町1丁目30番先",
+    "municipality": "新宿区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "靖国通り大ガード横（区設置）"
+  },
+  {
+    "name": "新宿駅東南口高架下喫煙所",
+    "lat": 35.68860,
+    "lng": 139.70150,
+    "address": "新宿区新宿3丁目37番先",
+    "municipality": "新宿区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "新宿駅東南口広場横・国道高架下（区設置）"
+  },
+  {
+    "name": "高田馬場駅前公衆喫煙所",
+    "lat": 35.71260,
+    "lng": 139.70370,
+    "address": "新宿区高田馬場1丁目35番先",
+    "municipality": "新宿区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "高田馬場駅前広場（区設置）"
+  },
+  {
+    "name": "信濃町駅公衆喫煙所",
+    "lat": 35.68040,
+    "lng": 139.71970,
+    "address": "新宿区信濃町34番地先",
+    "municipality": "新宿区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "信濃町駅南側駐輪場前（区設置）"
+  },
+  {
+    "name": "おおくぼそよかぜ橋公衆喫煙所",
+    "lat": 35.70050,
+    "lng": 139.70000,
+    "address": "新宿区百人町2丁目3番先",
+    "municipality": "新宿区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "百人町自転車保管場所前（区設置）"
+  },
+  {
+    "name": "池袋駅北口喫煙所",
+    "lat": 35.73100,
+    "lng": 139.71080,
+    "address": "豊島区西池袋1丁目1番先",
+    "municipality": "豊島区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "池袋駅北口（区営）"
+  },
+  {
+    "name": "池袋駅西口東京芸術劇場前喫煙所",
+    "lat": 35.72950,
+    "lng": 139.70950,
+    "address": "豊島区西池袋1丁目8-9",
+    "municipality": "豊島区",
+    "indoor": true,
+    "hours": "7:00-24:00",
+    "note": "東京芸術劇場前コンテナ型（区営）"
+  },
+  {
+    "name": "上野公園前交番裏喫煙所",
+    "lat": 35.71350,
+    "lng": 139.77450,
+    "address": "台東区上野公園1-65",
+    "municipality": "台東区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "上野公園入口・交番裏（区設置）"
+  },
+  {
+    "name": "JR上野駅広小路口喫煙所",
+    "lat": 35.71080,
+    "lng": 139.77460,
+    "address": "台東区上野6丁目15-14",
+    "municipality": "台東区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "上野駅広小路口ペデストリアンデッキ上（区設置）"
+  },
+  {
+    "name": "JR上野駅浅草口喫煙所",
+    "lat": 35.71420,
+    "lng": 139.77800,
+    "address": "台東区上野7丁目1番",
+    "municipality": "台東区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "上野駅浅草口ペデストリアンデッキ上（区設置）"
+  },
+  {
+    "name": "浅草寺境内喫煙所",
+    "lat": 35.71480,
+    "lng": 139.79670,
+    "address": "台東区浅草2丁目3-1",
+    "municipality": "台東区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "浅草寺境内（複数箇所あり）"
+  },
+  {
+    "name": "隅田公園喫煙所",
+    "lat": 35.71500,
+    "lng": 139.80050,
+    "address": "台東区花川戸1丁目1番",
+    "municipality": "台東区",
+    "indoor": false,
+    "hours": "7:00-19:30",
+    "note": "隅田公園内（区設置）"
+  },
+  {
+    "name": "アメ横センタービル喫煙所",
+    "lat": 35.70880,
+    "lng": 139.77470,
+    "address": "台東区上野4丁目7-8",
+    "municipality": "台東区",
+    "indoor": true,
+    "hours": "10:30-19:30",
+    "note": "アメ横センタービル内（第3水曜定休・12月除く）"
+  },
+  {
+    "name": "数寄屋橋公園喫煙所",
+    "lat": 35.67200,
+    "lng": 139.76300,
+    "address": "中央区銀座5丁目1-1",
+    "municipality": "中央区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "数寄屋橋公園内（区営）"
+  },
+  {
+    "name": "築地川公園喫煙所",
+    "lat": 35.66680,
+    "lng": 139.77380,
+    "address": "中央区明石町10-2",
+    "municipality": "中央区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "築地川公園内（区営）"
+  },
+  {
+    "name": "蛎殻町公園喫煙所",
+    "lat": 35.68350,
+    "lng": 139.78450,
+    "address": "中央区日本橋蛎殻町2丁目10-6",
+    "municipality": "中央区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "蛎殻町公園内（区営）"
+  },
+  {
+    "name": "浜町公園喫煙所",
+    "lat": 35.68600,
+    "lng": 139.78700,
+    "address": "中央区日本橋浜町2丁目59-1",
+    "municipality": "中央区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "浜町公園内（区営）"
+  },
+  {
+    "name": "地蔵橋公園喫煙所",
+    "lat": 35.69100,
+    "lng": 139.77700,
+    "address": "中央区日本橋本町4丁目5-11",
+    "municipality": "中央区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "地蔵橋公園内（区営）"
+  },
+  {
+    "name": "六本木駅6番出口喫煙所",
+    "lat": 35.66270,
+    "lng": 139.73120,
+    "address": "港区六本木6丁目",
+    "municipality": "港区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "六本木駅6番出口付近（区指定）"
+  },
+  {
+    "name": "赤坂見附駅前喫煙所",
+    "lat": 35.67700,
+    "lng": 139.73800,
+    "address": "港区赤坂3丁目",
+    "municipality": "港区",
+    "indoor": true,
+    "hours": "5:00-25:00",
+    "note": "赤坂見附駅前コンテナ型（区指定）"
+  },
+  {
+    "name": "新橋駅烏森口喫煙所",
+    "lat": 35.66530,
+    "lng": 139.75680,
+    "address": "港区新橋3丁目",
+    "municipality": "港区",
+    "indoor": true,
+    "hours": "24時間",
+    "note": "新橋駅烏森口・加熱式たばこ専用（区指定）"
+  },
+  {
+    "name": "田町駅西口喫煙所",
+    "lat": 35.64590,
+    "lng": 139.74570,
+    "address": "港区芝5丁目",
+    "municipality": "港区",
+    "indoor": true,
+    "hours": "5:00-25:00",
+    "note": "田町駅西口1階コンテナ型（区指定）"
+  },
+  {
+    "name": "目黒駅前喫煙所",
+    "lat": 35.63390,
+    "lng": 139.71580,
+    "address": "品川区上大崎3丁目",
+    "municipality": "品川区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "目黒駅西口前"
+  },
+  {
+    "name": "五反田駅前喫煙所",
+    "lat": 35.62580,
+    "lng": 139.72340,
+    "address": "品川区東五反田1丁目",
+    "municipality": "品川区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "五反田駅東口前"
+  },
+  {
+    "name": "大井町駅前喫煙所",
+    "lat": 35.60680,
+    "lng": 139.73500,
+    "address": "品川区大井1丁目",
+    "municipality": "品川区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "大井町駅中央口前"
+  },
+  {
+    "name": "錦糸町駅前喫煙所",
+    "lat": 35.69660,
+    "lng": 139.81350,
+    "address": "墨田区江東橋3丁目",
+    "municipality": "墨田区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "錦糸町駅南口前"
+  },
+  {
+    "name": "北千住駅前喫煙所",
+    "lat": 35.74970,
+    "lng": 139.80480,
+    "address": "足立区千住旭町",
+    "municipality": "足立区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "北千住駅西口前"
+  },
+  {
+    "name": "蒲田駅前喫煙所",
+    "lat": 35.56250,
+    "lng": 139.71600,
+    "address": "大田区蒲田5丁目",
+    "municipality": "大田区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "蒲田駅東口前"
+  },
+  {
+    "name": "中野駅前喫煙所",
+    "lat": 35.70640,
+    "lng": 139.66530,
+    "address": "中野区中野5丁目",
+    "municipality": "中野区",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "中野駅北口前"
+  },
+  {
+    "name": "吉祥寺駅前喫煙所",
+    "lat": 35.70320,
+    "lng": 139.57990,
+    "address": "武蔵野市吉祥寺南町1丁目",
+    "municipality": "武蔵野市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "吉祥寺駅南口（公園口）前"
+  },
+  {
+    "name": "立川駅前喫煙所",
+    "lat": 35.69780,
+    "lng": 139.41440,
+    "address": "立川市曙町2丁目",
+    "municipality": "立川市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "立川駅北口前"
+  },
+  {
+    "name": "町田駅前喫煙所",
+    "lat": 35.54250,
+    "lng": 139.44560,
+    "address": "町田市原町田6丁目",
+    "municipality": "町田市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "町田駅北口前"
+  },
+  {
+    "name": "横浜駅東口喫煙所",
+    "lat": 35.46600,
+    "lng": 139.62500,
+    "address": "横浜市西区高島2丁目",
+    "municipality": "横浜市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "横浜駅東口"
+  },
+  {
+    "name": "川崎駅前喫煙所",
+    "lat": 35.53090,
+    "lng": 139.69900,
+    "address": "川崎市川崎区駅前本町",
+    "municipality": "川崎市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "川崎駅東口前"
+  },
+  {
+    "name": "大宮駅前喫煙所",
+    "lat": 35.90650,
+    "lng": 139.62370,
+    "address": "さいたま市大宮区桜木町1丁目",
+    "municipality": "さいたま市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "大宮駅西口前"
+  },
+  {
+    "name": "千葉駅前喫煙所",
+    "lat": 35.61310,
+    "lng": 140.11340,
+    "address": "千葉市中央区新千葉1丁目",
+    "municipality": "千葉市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "千葉駅西口前"
+  },
+  {
+    "name": "なんば駅前喫煙所",
+    "lat": 34.66260,
+    "lng": 135.50110,
+    "address": "大阪市中央区難波5丁目",
+    "municipality": "大阪市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "なんば駅南口付近"
+  },
+  {
+    "name": "天王寺駅前喫煙所",
+    "lat": 34.64660,
+    "lng": 135.51330,
+    "address": "大阪市天王寺区悲田院町",
+    "municipality": "大阪市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "天王寺駅北口前"
+  },
+  {
+    "name": "名古屋駅桜通口喫煙所",
+    "lat": 35.17090,
+    "lng": 136.88270,
+    "address": "名古屋市中村区名駅1丁目",
+    "municipality": "名古屋市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "名古屋駅桜通口側"
+  },
+  {
+    "name": "栄駅前喫煙所",
+    "lat": 35.16810,
+    "lng": 136.90850,
+    "address": "名古屋市中区栄3丁目",
+    "municipality": "名古屋市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "栄駅付近"
+  },
+  {
+    "name": "博多駅前喫煙所",
+    "lat": 33.58980,
+    "lng": 130.42070,
+    "address": "福岡市博多区博多駅中央街",
+    "municipality": "福岡市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "博多駅博多口前"
+  },
+  {
+    "name": "天神駅前喫煙所",
+    "lat": 33.59210,
+    "lng": 130.39900,
+    "address": "福岡市中央区天神2丁目",
+    "municipality": "福岡市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "天神駅付近"
+  },
+  {
+    "name": "札幌駅前喫煙所",
+    "lat": 43.06870,
+    "lng": 141.35080,
+    "address": "札幌市北区北6条西4丁目",
+    "municipality": "札幌市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "札幌駅南口前"
+  },
+  {
+    "name": "仙台駅前喫煙所",
+    "lat": 38.26010,
+    "lng": 140.88230,
+    "address": "仙台市青葉区中央1丁目",
+    "municipality": "仙台市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "仙台駅西口前"
+  },
+  {
+    "name": "広島駅前喫煙所",
+    "lat": 34.39780,
+    "lng": 132.47560,
+    "address": "広島市南区松原町",
+    "municipality": "広島市",
+    "indoor": false,
+    "hours": "24時間",
+    "note": "広島駅南口前"
   }
 ]
